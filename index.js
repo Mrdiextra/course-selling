@@ -1,55 +1,23 @@
+require('dotenv').config()
+
 const express = require("express");
-const {userModel} = require("./db");
+const mongoose = require("mongoose");
+
+const { userRouter } = require("./routes/user");
+const { courseRouter } = require("./routes/course");
+const { adminRouter } = require("./routes/admin");
+
 const app = express();
-const port = 3000;
-
-
-
-app.use("/user/api",userModel);
-// Middleware
 app.use(express.json());
 
-// User signup
-app.get("/", function (req, res) {
-    return res.json({
-        message: "User home up successfully"
-    });
-});
-app.post("/user/signup", function (req, res) {
-    return res.json({
-        message: "User signed up successfully"
-    });
-});
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/course", courseRouter);
 
-// User signin
-app.post("/user/signin", function (req, res) {
-    return res.json({
-        message: "User signed in successfully"
-    });
-});
+async function main() {
+    await mongoose.connect(process.env.MONGO_URL)
+    app.listen(3000);
+    console.log("listening on port 3000")
+}
 
-// Get user purchases
-app.get("/user/purchases", function (req, res) {
-    return res.json({
-        message: "User purchases fetched successfully"
-    });
-});
-
-// Purchase a course
-app.post("/course/purchase", function (req, res) {
-    return res.json({
-        message: "Course purchased successfully"
-    });
-});
-
-// Get all courses
-app.get("/courses", function (req, res) {
-    return res.json({
-        message: "Courses fetched successfully"
-    });
-});
-
-// Start server
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
+main();
